@@ -13,7 +13,7 @@ class CartService {
     id_cart: string,
     body: { qtd: number; itens: string; valor: number }
   ) {
-    const existe = await CartItemModel.findOne({ where: { id_cart } });
+    const existe = await CartModel.findOne({ where: { id: id_cart } });
 
     //Cria carrinho APENAS se o UUID for inalido ou se o id de carrinho nao existir
     if (!isUUID(id_cart) || !existe) {
@@ -21,20 +21,60 @@ class CartService {
       id_cart = newId.data.dataValues.id || "";
     }
 
-    const data = {
-      id_cart,
-      ...body,
-    };
+    const existeProduto = await CartItemModel.findOne({
+      where: { id_cart, itens: body.itens },
+    });
 
-    await CartItemModel.create(data);
+    if (existeProduto && existeProduto.dataValues.itens === body.itens) {
+      await CartItemModel.update(
+        {
+          qtd: existeProduto.dataValues.qtd + body.qtd,
+          valor:
+            Number(existeProduto.dataValues.valor) +
+            Number(body.valor * body.qtd),
+        },
+        {
+          where: { id_cart, itens: body.itens },
+        }
+      );
+    }
+    if (!existeProduto) {
+      const data = {
+        id_cart,
+        ...body,
+        valor: body.qtd > 1 ? body.valor * body.qtd : body.valor,
+      };
+
+      await CartItemModel.create(data);
+    }
 
     const cart = await this.pegarCarrinho(id_cart);
-    return {
-      success: true,
-      header: id_cart,
-      data: cart.data,
-      alert: "O id_cart deve ser salvo para adicionar no mesmo carrinho",
+    return cart;
+  }
+
+  static async alterarQuantidade(
+    id_cart: string,
+    body: { qtd: number, itens: string; }
+  ) {
+    const existe = await CartItemModel.findOne({
+      where: { id_cart, itens: body.itens },
+    });
+    if (!existe) throw new Error("Produto no carrinho não encontrado");
+
+    const valorUnitario = existe.dataValues.valor / existe.dataValues.qtd;
+
+    if(body.qtd <= 0) throw new Error("Quantidade inválida");
+
+    const data = {
+      qtd: body.qtd,
+      valor: Number(valorUnitario * body.qtd).toFixed(2),
     };
+
+    await CartItemModel.update(data, {
+      where: { id_cart, itens: body.itens },
+    });
+
+    return data
   }
 
   static async pegarCarrinho(id_cart: string) {
@@ -42,7 +82,7 @@ class CartService {
     if (!cart) throw new Error("Carrinho não encontrado");
     console.log(cart);
 
-    return { success: true, data: cart };
+    return cart
   }
 
   static async calcularTotal(id_cart: string) {
@@ -56,7 +96,18 @@ class CartService {
 
     const totalValor = total.toFixed(2);
 
-    return { success: true, total: totalValor };
+    return totalValor
+  }
+
+  static async removerProduto(id_cart: string, nome: string) {
+    const cart = await CartItemModel.findOne({
+      where: { id_cart, itens: nome },
+    });
+    if (!cart) throw new Error("Produto não encontrado");
+
+    await cart.destroy();
+
+    return cart
   }
 }
 

@@ -10,9 +10,11 @@ class CartRoutes {
     }
 
     private initRoutes(){
-        this.route.put("/add/:id", CartController.addToCart);
+        this.route.post("/adicionar/:id", CartController.addToCart);
+        this.route.put("/alterar/:id", CartController.alterarQuantidade);
         this.route.get("/get/:id", CartController.getCart);
         this.route.get("/total/:id", CartController.calculateTotal);
+        this.route.delete("/remover/:id", CartController.removerProduto);
     }
 
     public getRoutes(){

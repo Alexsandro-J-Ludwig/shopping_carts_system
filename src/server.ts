@@ -20,7 +20,7 @@ class Server{
     }
 
     private initRoutes(){
-        this.app.use("/cart", new CartRoutes().getRoutes())
+        this.app.use("/carrinho", new CartRoutes().getRoutes())
     }
 
     public async start(){
