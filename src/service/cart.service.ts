@@ -1,26 +1,63 @@
 import { CartModel } from "../model/cart.model";
+import { CartItemModel } from "../model/Cart_Iten.model";
+import { isUUID } from "validator";
 
 class CartService {
-    static async addToCart(body: { itens: string[], valor: string[] }){
-        const cart = CartModel.in
-        return cart
+  static async criarCarrinho() {
+    const cart = await CartModel.create();
+
+    return { success: true, data: cart };
+  }
+
+  static async adicionarAoCarrinho(
+    id_cart: string,
+    body: { qtd: number; itens: string; valor: number }
+  ) {
+    const existe = await CartItemModel.findOne({ where: { id_cart } });
+
+    //Cria carrinho APENAS se o UUID for inalido ou se o id de carrinho nao existir
+    if (!isUUID(id_cart) || !existe) {
+      const newId = await this.criarCarrinho();
+      id_cart = newId.data.dataValues.id || "";
     }
 
-    static async getCart(id: string){
-        const cart = CartModel.findByPk(id);
-        return cart
-    }
+    const data = {
+      id_cart,
+      ...body,
+    };
 
-    static async calculateTotal(){
-        const cart = CartModel.findAll();
+    await CartItemModel.create(data);
 
-        let total = 0
-        cart.map((idx) => {
-            total += idx.valor
-        })
+    const cart = await this.pegarCarrinho(id_cart);
+    return {
+      success: true,
+      header: id_cart,
+      data: cart.data,
+      alert: "O id_cart deve ser salvo para adicionar no mesmo carrinho",
+    };
+  }
 
-        return total;
-    }
+  static async pegarCarrinho(id_cart: string) {
+    const cart = await CartItemModel.findAll({ where: { id_cart } });
+    if (!cart) throw new Error("Carrinho não encontrado");
+    console.log(cart);
+
+    return { success: true, data: cart };
+  }
+
+  static async calcularTotal(id_cart: string) {
+    const cart = await CartItemModel.findAll({ where: { id_cart } });
+    if (!cart) throw new Error("Carrinho não encontrado");
+
+    let total = 0;
+    Object.values(cart).map((value) => {
+      total += value.dataValues.valor * value.dataValues.qtd;
+    });
+
+    const totalValor = total.toFixed(2);
+
+    return { success: true, total: totalValor };
+  }
 }
 
-export { CartService }
+export { CartService };
