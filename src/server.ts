@@ -3,24 +3,24 @@ import "dotenv/config";
 import express, { Application } from "express";
 import { Connection } from "./config/Db.config";
 import { CartRoutes } from "./routes/cart.routes";
-import { CartModel } from "./model/cart.model";
-import { CartItemModel } from "./model/Cart_Iten.model";
+import { CupomRoutes } from "./routes/cupom.routes";
 
 class Server{
-    private connection: Connection
+    private connection: Connection;
     private app: Application;
 
     constructor(){
-        this.app = express()
-        this.app.use(express.json())
+        this.app = express();
+        this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         
-        this.connection = new Connection()
-        this.initRoutes()
+        this.connection = new Connection();
+        this.initRoutes();
     }
 
     private initRoutes(){
-        this.app.use("/carrinho", new CartRoutes().getRoutes())
+        this.app.use("/carrinho", new CartRoutes().getRoutes());
+        this.app.use("cupom", new CupomRoutes().getRoutes());
     }
 
     public async start(){
@@ -35,8 +35,8 @@ class Server{
             
         } catch (err:any) {
             console.error(`Falha de conexão com o banco de dados: ${err}`)
-        }
-    }
-}
+        };
+    };
+};
 
 new Server().start();

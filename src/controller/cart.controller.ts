@@ -26,7 +26,7 @@ class CartController {
     } catch (err: any) {
       if (err.message === "Carrinho não encontrado")
         return res.status(404).send("Carrinho não encontrado");
-      if(err.message === "Quantidade inválida")
+      if (err.message === "Quantidade inválida")
         return res.status(400).send("Quantidade inválida");
       res.status(500).send({ message: `Erro ao alterar quantidade: ${err}` });
     }
@@ -67,6 +67,22 @@ class CartController {
       if (err.message === "Produto não encontrado")
         return res.status(404).send("Produto não encontrado");
       res.status(500).send({ message: `Erro ao remover produto: ${err}` });
+    }
+  }
+
+  static async finalziarCompra(req: Request, res: Response) {
+    try {
+      const response = await CartService.comprarCarrinho(
+        req.params.id,
+        req.body
+      );
+      return res.status(200).send(response);
+    } catch (err: any) {
+      if(err.message === "Este Carrinho de compras não existe")
+        return res.status(404).send(err.message)
+      if(err.message === "Dados de produto ou pedido inválidos")
+        return res.status(400).send(err.message)
+      return res.status(500).send(`Erro interno: ${err}`)
     }
   }
 }
