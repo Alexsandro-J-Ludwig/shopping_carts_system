@@ -32,7 +32,7 @@ class PedidosRepository {
     });
 
     const itens = await PedidoItensModel.findAll({
-      where: { id_pedido: pedido?.id },
+      where: { id_pedido: pedido?.dataValues.id },
     });
 
     return { pedido, itens };

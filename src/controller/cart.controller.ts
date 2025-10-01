@@ -7,7 +7,7 @@ import { FinalizarDTO } from "../dto/Finalizar.dto";
 class CartController {
   static async addToCart(req: Request, res: Response) {
     try {
-      const dto = new CartDTO(req.params.id, req.body)
+      const dto = new CartDTO(req.params.id, req.body);
       const response = await CartService.adicionarAoCarrinho(dto);
       res.status(201).send({ success: true, data: response });
     } catch (err: any) {
@@ -19,7 +19,7 @@ class CartController {
 
   static async alterarQuantidade(req: Request, res: Response) {
     try {
-      const dto = new UpdateQuantityDTO(req.params.id, req.body)
+      const dto = new UpdateQuantityDTO(req.params.id, req.body);
       const response = await CartService.alterarQuantidade(dto);
       res.status(200).send({ success: true, data: response });
     } catch (err: any) {
@@ -57,7 +57,7 @@ class CartController {
 
   static async removerProduto(req: Request, res: Response) {
     try {
-      const dto = new CartDTO(req.params.id, req.body)
+      const dto = new CartDTO(req.params.id, req.body);
       const response = await CartService.removerProduto(dto);
       res.status(200).send({ success: true, data: response });
     } catch (err: any) {
@@ -69,7 +69,7 @@ class CartController {
 
   static async finalziarCompra(req: Request, res: Response) {
     try {
-      const dto = new FinalizarDTO(req.params.id, req.body)
+      const dto = new FinalizarDTO(req.params.id, req.body);
       const response = await CartService.comprarCarrinho(dto);
       return res.status(200).send(response);
     } catch (err: any) {

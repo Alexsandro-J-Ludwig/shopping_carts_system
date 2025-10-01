@@ -137,10 +137,8 @@ class CartService {
       };
     });
 
-    const pedidoItens = await PedidosRepository.criarItensPedido(itensDoPedido);
-    console.log(pedidoItens);
-    
-
+    await PedidosRepository.criarItensPedido(itensDoPedido);
+  
     const pedidoHistorico = await PedidosRepository.listaPedido(dto.id_cart);
     return { success: true, pedido: pedidoHistorico };
   }
