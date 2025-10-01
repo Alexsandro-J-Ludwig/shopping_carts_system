@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { CartService } from "../service/cart.service";
-import { CartDTO } from "../dto/cartDTO";
+import { CartService } from "../service/cart_service";
+import { CartDTO } from "../dto/cart_dto";
 import { UpdateQuantityDTO } from "../dto/updateQuantity.dto";
-import { FinalizarDTO } from "../dto/finalizar.dto";
+import { FinalizarDTO } from "../dto/finalizar_dto";
 
 class CartController {
   static async addToCart(req: Request, res: Response) {

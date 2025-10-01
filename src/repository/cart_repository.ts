@@ -1,5 +1,5 @@
-import { CartItemModel } from "../model/cart_item.model";
-import { CartModel } from "../model/cart.model";
+import { CartItemModel } from "../model/cart_item_model";
+import { CartModel } from "../model/cart_model";
 
 interface ItensProp {
   id_cart: string;

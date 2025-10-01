@@ -1,5 +1,5 @@
-import { PedidoItensModel } from "../model/pedidoItens.model";
-import { PedidoModel } from "../model/pedido.model";
+import { PedidoItensModel } from "../model/pedidoItens_model";
+import { PedidoModel } from "../model/pedido_model";
 
 interface PedidosRepositoryProp {
   id_cart: string;

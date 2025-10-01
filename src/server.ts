@@ -1,9 +1,9 @@
 import "dotenv/config";
 
 import express, { Application } from "express";
-import { Connection } from "./config/Db.config";
-import { CartRoutes } from "./routes/cart.routes";
-import { CupomRoutes } from "./routes/cupom.routes";
+import { Connection } from "./config/db.config";
+import { CartRoutes } from "./routes/cart_routes";
+import { CupomRoutes } from "./routes/cupom_routes";
 
 class Server{
     private connection: Connection;

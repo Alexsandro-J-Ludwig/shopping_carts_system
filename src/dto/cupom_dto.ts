@@ -1,4 +1,4 @@
-import { ValidarDTO } from "./validarDTO";
+import { ValidarDTO } from "./validar_dto";
 
 class CupomDTO {
   public readonly cupom: string;

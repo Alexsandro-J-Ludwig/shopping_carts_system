@@ -1,5 +1,5 @@
 import { Op, Sequelize } from "sequelize";
-import { CupomModel } from "../model/cupom.model";
+import { CupomModel } from "../model/cupom_model";
 
 interface CupomProp {
   cupom: string;

@@ -1,5 +1,5 @@
 import { DataTypes, Model, NOW, Optional } from "sequelize";
-import { Connection } from "../config/Db.config";
+import { Connection } from "../config/db.config";
 
 const sequelize = new Connection().sequelize;
 

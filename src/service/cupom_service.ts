@@ -1,5 +1,5 @@
-import { CupomDTO } from "../dto/cupomDTO";
-import { CupomRepository } from "../repository/cupom.repository";
+import { CupomDTO } from "../dto/cupom_dto";
+import { CupomRepository } from "../repository/cupom_repository";
 
 class CupomService {
   static async criarCupom(dto: CupomDTO) {

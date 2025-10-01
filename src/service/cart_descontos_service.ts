@@ -1,5 +1,5 @@
-import { CartService } from "./cart.service";
-import { CupomService } from "./cupom.service";
+import { CartService } from "./cart_service";
+import { CupomService } from "./cupom_service";
 
 class CarrinhoDescontos {
   static async descontos(total: number) {
