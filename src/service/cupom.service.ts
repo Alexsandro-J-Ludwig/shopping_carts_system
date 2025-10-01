@@ -1,4 +1,4 @@
-import { CupomDTO } from "../dto/CupomDTO";
+import { CupomDTO } from "../dto/cupomDTO";
 import { CupomRepository } from "../repository/cupom.repository";
 
 class CupomService {

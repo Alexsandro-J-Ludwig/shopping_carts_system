@@ -1,4 +1,3 @@
-import { now } from "sequelize/lib/utils";
 import { isDate, isEmpty, isUUID } from "validator";
 
 class ValidarDTO {

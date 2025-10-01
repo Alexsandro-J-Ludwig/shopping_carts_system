@@ -1,4 +1,4 @@
-import { ValidarDTO } from "./ValidarDTO";
+import { ValidarDTO } from "./validarDTO";
 
 class FinalizarDTO {
   public readonly id_cart: string;

@@ -1,10 +1,10 @@
 import { CartRepository } from "../repository/cart.repository";
 import { isUUID } from "validator";
 import { CarrinhoDescontos } from "./cart.descontos.service";
-import { PedidosRepository } from "../repository/Pedido.repository";
-import { CartDTO } from "../dto/CartDTO";
-import { UpdateQuantityDTO } from "../dto/UpdateQuantity.dto";
-import { FinalizarDTO } from "../dto/Finalizar.dto";
+import { PedidosRepository } from "../repository/pedido.repository";
+import { CartDTO } from "../dto/cartDTO";
+import { UpdateQuantityDTO } from "../dto/updateQuantity.dto";
+import { FinalizarDTO } from "../dto/finalizar.dto";
 
 class CartService {
   static async criarCarrinho() {

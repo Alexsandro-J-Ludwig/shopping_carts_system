@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { Connection } from "../config/Db.config";
 
 const sequelize = new Connection().sequelize;

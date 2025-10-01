@@ -1,4 +1,3 @@
-import { CartRepository } from "../repository/cart.repository";
 import { CartService } from "./cart.service";
 import { CupomService } from "./cupom.service";
 

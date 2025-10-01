@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CupomService } from "../service/cupom.service";
-import { CupomDTO } from "../dto/CupomDTO";
+import { CupomDTO } from "../dto/cupomDTO";
 
 
 class CupomController {
