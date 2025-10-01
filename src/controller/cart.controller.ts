@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { CartService } from "../service/cart.service";
+import { CartDTO } from "../dto/CartDTO";
+import { UpdateQuantityDTO } from "../dto/UpdateQuantity.dto";
+import { FinalizarDTO } from "../dto/Finalizar.dto";
 
 class CartController {
   static async addToCart(req: Request, res: Response) {
     try {
-      const response = await CartService.adicionarAoCarrinho(
-        req.params.id,
-        req.body
-      );
+      const dto = new CartDTO(req.params.id, req.body)
+      const response = await CartService.adicionarAoCarrinho(dto);
       res.status(201).send({ success: true, data: response });
     } catch (err: any) {
       res
@@ -18,10 +19,8 @@ class CartController {
 
   static async alterarQuantidade(req: Request, res: Response) {
     try {
-      const response = await CartService.alterarQuantidade(
-        req.params.id,
-        req.body
-      );
+      const dto = new UpdateQuantityDTO(req.params.id, req.body)
+      const response = await CartService.alterarQuantidade(dto);
       res.status(200).send({ success: true, data: response });
     } catch (err: any) {
       if (err.message === "Carrinho não encontrado")
@@ -58,10 +57,8 @@ class CartController {
 
   static async removerProduto(req: Request, res: Response) {
     try {
-      const response = await CartService.removerProduto(
-        req.params.id,
-        req.body.nome
-      );
+      const dto = new CartDTO(req.params.id, req.body)
+      const response = await CartService.removerProduto(dto);
       res.status(200).send({ success: true, data: response });
     } catch (err: any) {
       if (err.message === "Produto não encontrado")
@@ -72,17 +69,15 @@ class CartController {
 
   static async finalziarCompra(req: Request, res: Response) {
     try {
-      const response = await CartService.comprarCarrinho(
-        req.params.id,
-        req.body
-      );
+      const dto = new FinalizarDTO(req.params.id, req.body)
+      const response = await CartService.comprarCarrinho(dto);
       return res.status(200).send(response);
     } catch (err: any) {
-      if(err.message === "Este Carrinho de compras não existe")
-        return res.status(404).send(err.message)
-      if(err.message === "Dados de produto ou pedido inválidos")
-        return res.status(400).send(err.message)
-      return res.status(500).send(`Erro interno: ${err}`)
+      if (err.message === "Este Carrinho de compras não existe")
+        return res.status(404).send(err.message);
+      if (err.message === "Dados de produto ou pedido inválidos")
+        return res.status(400).send(err.message);
+      return res.status(500).send(`Erro interno: ${err}`);
     }
   }
 }

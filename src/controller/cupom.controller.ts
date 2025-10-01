@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { CupomService } from "../service/cupom.service";
+import { CupomDTO } from "../dto/CupomDTO";
+
 
 class CupomController {
   static async criarCupom(req: Request, res: Response) {
+    const dto = new CupomDTO(req.body)
     try {
-      const response = await CupomService.criarCupom(req.body);
+      const response = await CupomService.criarCupom(dto);
       return res.status(201).send(response);
     } catch (err: any) {
         if(err.message === "Cupom já existe ou está ativo")
@@ -26,7 +29,7 @@ class CupomController {
 
   static async removerCupom(req: Request, res: Response){
     try {
-        const response = await CupomService.excluirCupom(req.body);
+        const response = await CupomService.excluirCupom(req.params.cupom);
         return res.status(204).send(response)
     } catch (err:any) {
         if(err.message === "Cupom não encontrado")

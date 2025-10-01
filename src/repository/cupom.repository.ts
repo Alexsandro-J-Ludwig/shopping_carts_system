@@ -46,7 +46,7 @@ class CupomRepository {
   }
 
   static async removerCupom(cupom: string) {
-    return await CupomModel.destroy({ where: { cupom } });
+    return await CupomModel.destroy({ where: {cupom}});
   }
 }
 

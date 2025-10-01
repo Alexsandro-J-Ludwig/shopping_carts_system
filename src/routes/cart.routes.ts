@@ -15,6 +15,7 @@ class CartRoutes {
         this.route.get("/get/:id", CartController.getCart);
         this.route.get("/total/:id", CartController.calculateTotal);
         this.route.delete("/remover/:id", CartController.removerProduto);
+        this.route.post("/finalizar/:id", CartController.finalziarCompra)
     }
 
     public getRoutes(){

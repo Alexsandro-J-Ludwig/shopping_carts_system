@@ -22,9 +22,9 @@ class CartRepository {
     return await CartItemModel.create(data);
   }
 
-  static async alterarQuantidade(data: ItensProp) {
+  static async alterarQuantidade(data: {qtd: number, valor:number}, where: CartKey) {
     return await CartItemModel.update({qtd:data.qtd, valor: data.valor}, {
-      where: { id_cart: data.id_cart, itens: data.itens },
+      where: { id_cart: where.id_cart, itens: where.itens },
     });
   }
 
@@ -42,8 +42,8 @@ class CartRepository {
     });
   }
 
-  static async pegarFrete(id_cart: string){
-    return await CartModel.findOne({ where: { id: id_cart}})
+  static async pegarFrete(id_cart:string){
+    return await CartModel.findByPk(id_cart)
   }
 }
 

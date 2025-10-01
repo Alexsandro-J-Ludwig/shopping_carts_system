@@ -22,8 +22,8 @@ class PedidosRepository {
     return await PedidoModel.create(poedido);
   }
 
-  static async criarItensPedido(itens: ItensRepositoryProp) {
-    return await PedidoItensModel.create(itens);
+  static async criarItensPedido(itens: ItensRepositoryProp[]) {
+    return await PedidoItensModel.bulkCreate(itens);
   }
 
   static async listaPedido(id_cart:string) {

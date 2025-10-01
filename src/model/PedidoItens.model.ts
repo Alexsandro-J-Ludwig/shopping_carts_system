@@ -1,4 +1,4 @@
-import { DataTypes, Model, NOW, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { Connection } from "../config/Db.config";
 
 const sequelize = new Connection().sequelize;
@@ -55,8 +55,8 @@ PedidoItensModel.init(
   },
   {
     sequelize: sequelize,
-    modelName: "Pedido_Itens",
-    tableName: "pedido_itens",
+    modelName: "PedidoItem",
+    tableName: "pedidoitem",
     freezeTableName: true,
     timestamps: false,
   }

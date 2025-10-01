@@ -11,7 +11,7 @@ class CupomRoutes{
     private initRoutes(){
         this.route.post("/criar", CupomController.criarCupom);
         this.route.get("/pegar", CupomController.pegarCupons);
-        this.route.delete("/deletar", CupomController.removerCupom);
+        this.route.delete("/deletar/:cupom", CupomController.removerCupom);
     }
 
     public getRoutes(){

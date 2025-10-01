@@ -15,7 +15,7 @@ class CartModel extends Model<CartModelProps> {
 
 CartModel.init({},{
     sequelize: sequelize,
-    modelName: "Cart",
+    modelName: "cart",
     tableName: "cart",
     freezeTableName: true,
     timestamps: false,

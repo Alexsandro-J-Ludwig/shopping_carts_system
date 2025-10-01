@@ -2,6 +2,9 @@ import { CartRepository } from "../repository/cart.repository";
 import { isUUID } from "validator";
 import { CarrinhoDescontos } from "./cart.descontos.service";
 import { PedidosRepository } from "../repository/Pedido.repository";
+import { CartDTO } from "../dto/CartDTO";
+import { UpdateQuantityDTO } from "../dto/UpdateQuantity.dto";
+import { FinalizarDTO } from "../dto/Finalizar.dto";
 
 class CartService {
   static async criarCarrinho() {
@@ -10,69 +13,62 @@ class CartService {
     return { success: true, data: cart };
   }
 
-  static async adicionarAoCarrinho(
-    id_cart: string,
-    body: { qtd: number; itens: string; valor: number }
-  ) {
-    const existe = await CartRepository.pegarCarrinho(id_cart);
-
+  static async adicionarAoCarrinho(dto: CartDTO) {
+    if (isUUID(dto.id_cart)) {
+      
+    }
     //Cria carrinho APENAS se o UUID for inalido ou se o id de carrinho nao existir
-    if (!isUUID(id_cart) || !existe) {
+    if (!isUUID(dto.id_cart)) {
       const newId = await this.criarCarrinho();
-      id_cart = newId.data.dataValues.id || "";
+      dto.id_cart = newId.data.dataValues.id || "";
+    } 
+    if(isUUID(dto.id_cart)){
+      const existe = await CartRepository.pegarCarrinho(dto.id_cart);
+      if(!existe) {
+        const newId = await this.criarCarrinho();
+        dto.id_cart = newId.data.dataValues.id || ""
+      }
     }
 
-    const existeProduto = await CartRepository.pegarProduto({
-      id_cart: id_cart,
-      itens: body.itens,
-    });
-
-    if (existeProduto && existeProduto.dataValues.itens === body.itens) {
+    const existeProduto = await CartRepository.pegarProduto({id_cart:dto.id_cart, itens:dto.itens});
+    
+    if (existeProduto && existeProduto.dataValues.itens === dto.itens) {
+      if(isNaN(existeProduto.dataValues.valor))
+        throw new Error("Nao eh um numero")
       await CartRepository.alterarQuantidade({
-        id_cart,
-        itens: body.itens,
-        qtd: Number(existeProduto.dataValues.qtd + body.qtd),
-        valor: Number(existeProduto.dataValues.valor + body.valor * body.qtd),
+        qtd: Number(existeProduto.dataValues.qtd + dto.qtd),
+        valor: Number(existeProduto.dataValues.valor) + (dto.valor * dto.qtd),
+      }, {
+        ...dto
       });
     }
     if (!existeProduto) {
-      const data = {
-        id_cart,
-        ...body,
-        valor: body.qtd > 1 ? body.valor * body.qtd : body.valor,
-      };
-
-      await CartRepository.adicionarAoCarrinho(data);
+      (dto.valor = dto.qtd > 1 ? dto.valor * dto.qtd : dto.valor),
+        await CartRepository.adicionarAoCarrinho(dto);
     }
 
-    const cart = await this.pegarCarrinho(id_cart);
+    const cart = await this.pegarCarrinho(dto.id_cart);
     return cart;
   }
 
-  static async alterarQuantidade(
-    id_cart: string,
-    body: { qtd: number; itens: string }
-  ) {
-    const existe = await CartRepository.pegarProduto({
-      id_cart,
-      itens: body.itens,
-    });
+  static async alterarQuantidade(dto: UpdateQuantityDTO) {
+    const existe = await CartRepository.pegarProduto(dto);
     if (!existe) throw new Error("Produto no carrinho não encontrado");
 
     const valorUnitario = existe.dataValues.valor / existe.dataValues.qtd;
 
-    if (body.qtd <= 0) throw new Error("Quantidade inválida");
+    if (dto.qtd <= 0) throw new Error("Quantidade inválida");
 
     const data = {
-      qtd: body.qtd,
-      valor: Number(valorUnitario * body.qtd).toFixed(2),
+      qtd: dto.qtd,
+      valor: Number(valorUnitario * dto.qtd).toFixed(2),
     };
 
     await CartRepository.alterarQuantidade({
-      id_cart,
-      itens: body.itens,
       valor: Number(data.valor),
       qtd: data.qtd,
+    }, {
+      ...dto
     });
 
     return data;
@@ -100,8 +96,8 @@ class CartService {
     return { success: true, carrinho: cart, total: totalValor };
   }
 
-  static async removerProduto(id_cart: string, itens: string) {
-    const cart = await CartRepository.pegarProduto({ id_cart, itens: itens });
+  static async removerProduto(dto: { id_cart: string; itens: string }) {
+    const cart = await CartRepository.pegarProduto(dto);
     if (!cart) throw new Error("Produto não encontrado");
 
     await cart.destroy();
@@ -109,49 +105,43 @@ class CartService {
     return cart;
   }
 
-  static async comprarCarrinho(id_cart: string, body: { cupom: string }) {
-    const existe = await CartRepository.pegarCarrinho(id_cart);
+  static async comprarCarrinho(dto: FinalizarDTO) {
+    const existe = await CartRepository.pegarCarrinho(dto.id_cart);
+    
     if (!existe) throw new Error("Este Carrinho de compras não existe");
-
+    
     const descontos = await CarrinhoDescontos.resumoCompleto(
-      id_cart,
-      body.cupom
+      dto.id_cart,
+      dto.cupom
     );
 
     const dataPedido = {
-      id_cart,
-      total: descontos.total,
+      id_cart: dto.id_cart,
+      total: descontos.totalOriginal,
       frete: descontos["frete com desconto"],
-      cupom_aplicado: descontos["cupom aplicado"],
-      total_final: descontos["total com desconto"],
+      cupom_aplicado: descontos.cupom?.cupom,
+      total_final: descontos.totalFinal
     };
+    
     const pedido = await PedidosRepository.criarPedido(dataPedido);
 
-    const produtos = await Promise.all(
-      descontos.carrinho.carrinho.map(async (item) => {
-        return await CartRepository.pegarProduto({
-          id_cart: item.id_cart,
-          itens: item.itens,
-        });
-      })
-    );
+    const idDoPedido = pedido.dataValues.id;
 
-    for (const produto of produtos) {
-      if (!produto || !produto.id || !pedido?.id) {
-        throw new Error("Dados de produto ou pedido inválidos");
-      }
-
-      const item = {
-        id_pedido: pedido!.id,
-        id_produto: produto!.id,
-        quantidade: produto!.qtd,
-        valor_unitario: produto!.valor / produto!.qtd,
-        subtotal: produto!.valor,
+    const itensDoPedido = descontos.carrinho.map((itemCarrinho) => {
+      return {
+        id_pedido: idDoPedido!,
+        id_produto: itemCarrinho.dataValues.id!,
+        quantidade: itemCarrinho.dataValues.qtd,
+        valor_unitario: itemCarrinho.dataValues.valor / itemCarrinho.dataValues.qtd,
+        subtotal: itemCarrinho.dataValues.valor,
       };
-      await PedidosRepository.criarItensPedido(item);
-    }
+    });
 
-    const pedidoHistorico = await PedidosRepository.listaPedido(id_cart);
+    const pedidoItens = await PedidosRepository.criarItensPedido(itensDoPedido);
+    console.log(pedidoItens);
+    
+
+    const pedidoHistorico = await PedidosRepository.listaPedido(dto.id_cart);
     return { success: true, pedido: pedidoHistorico };
   }
 }

@@ -1,16 +1,14 @@
+import { CupomDTO } from "../dto/CupomDTO";
 import { CupomRepository } from "../repository/cupom.repository";
 
 class CupomService {
-  static async criarCupom(body: {
-    cupom: string;
-    valor_desconto: number;
-    data_expiracao: Date;
-    uso_maximo: number;
-  }) {
-    const existe = await CupomRepository.pegarCupom(body.cupom);
-    if (existe) throw new Error("Cupom já existe ou está ativo");
+  static async criarCupom(dto: CupomDTO) {
+    const existe = await CupomRepository.pegarCupom(dto.cupom);
+    
+    if (existe && existe.dataValues.cupom === dto.cupom)
+      throw new Error("Cupom já existe ou está ativo");
 
-    const cupom = await CupomRepository.criarCupom(body);
+    const cupom = await CupomRepository.criarCupom(dto);
     return { success: true, data: cupom };
   }
 
@@ -45,9 +43,8 @@ class CupomService {
 
     return {
       success: true,
-      cupom: existe,
-      usos_restantes: Math.max(usosRestantes, 0),
-      msg: `Cupom '${cupom}' aplicado com sucesso.`,
+      cupom: existe.dataValues.cupom,
+      valor_desconto: existe.dataValues.valor_desconto,
     };
   }
 

@@ -70,8 +70,8 @@ CupomModel.init(
   },
   {
     sequelize: sequelize,
-    modelName: "Cart_itens",
-    tableName: "cart_itens",
+    modelName: "cupom",
+    tableName: "cupom",
     freezeTableName: true,
     timestamps: false,
   }
